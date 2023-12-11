@@ -3,5 +3,6 @@
   import Gallery from "./components/Gallery.svelte";
 </script>
 
-<div transition:fade={{ delay: 1000 }}></div>
-<Gallery />
+<div class="container mx-auto" transition:fade={{ delay: 1000 }}>
+  <Gallery />
+</div>
