@@ -92,3 +92,17 @@ router.post("/api/upload", upload.array("image"), (req, res) => {
     });
   }
 });
+
+router.delete("/api/images/:filename", (req, res) => {
+  const imagesDir = path.join(__dirname, "images");
+  const targetFile = path.join(imagesDir, req.params.filename);
+
+  fs.unlink(targetFile, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send({ message: "画像の削除中にエラーが発生しました。", error: err });
+    } else {
+      res.send({ message: "画像が正常に削除されました。" });
+    }
+  });
+});
