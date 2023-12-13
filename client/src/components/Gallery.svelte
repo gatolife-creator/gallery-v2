@@ -1,18 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { flip } from "svelte/animate";
   import PhotoSwipeLightbox from "photoswipe/lightbox";
   import Dropzone from "svelte-file-dropzone/Dropzone.svelte";
   import ConfirmationDialog from "./ConfirmationDialog.svelte";
   import ImBin from "svelte-icons-pack/im/ImBin";
   import Icon from "svelte-icons-pack/Icon.svelte";
   import "photoswipe/style.css";
+  import "./Gallery.css";
 
   import type { Image } from "../types";
-
-  // ドラッグアンドドロップが終了したら自動的にアップロードを実行する
-  function handleDrop(_: DragEvent, files: File[]) {
-    handleFileUpload(files);
-  }
 
   let images: Image[] = [];
   let uploaded = false;
@@ -58,10 +55,6 @@
     lightbox.init();
   }
 
-  onMount(async () => {
-    await getImages();
-  });
-
   async function deleteImage(imageSrc: string) {
     const filename = imageSrc.replace("/images/", ""); // "/images/"を削除
 
@@ -86,7 +79,8 @@
   let showDialog = false;
   let imageToDelete = "";
 
-  function openDialog(imageSrc: string) {
+  function openDialog(event: MouseEvent, imageSrc: string) {
+    event.stopPropagation();
     showDialog = true;
     imageToDelete = imageSrc;
   }
@@ -99,16 +93,50 @@
     await deleteImage(imageToDelete);
     closeDialog();
   }
+
+  let dragging = false;
+
+  function handleDragOver(event: DragEvent) {
+    event.preventDefault();
+    dragging = true;
+  }
+
+  function handleDragLeave(event: DragEvent) {
+    if (
+      event.relatedTarget === null ||
+      !(event.currentTarget as Element).contains(event.relatedTarget as Node)
+    ) {
+      dragging = false;
+    }
+  }
+
+  function handleDrop(_: DragEvent, files: File[]) {
+    dragging = false;
+    handleFileUpload(files);
+  }
+
+  onMount(async () => {
+    await getImages();
+  });
 </script>
 
-<Dropzone
-  accept="image/*"
-  inputElement={null}
-  on:drop={(e) => {
-    console.log(e);
-    handleDrop(e.detail, e.detail.acceptedFiles);
-  }}
-/>
+<svelte:window on:dragover={handleDragOver} on:dragleave={handleDragLeave} />
+
+{#if dragging}
+  <div class="overlay">
+    <div class="confirmation-dialog">
+      <Dropzone
+        containerClasses="w-full h-full"
+        accept="image/*"
+        inputElement={null}
+        on:drop={(e) => {
+          console.log(e);
+          handleDrop(e.detail, e.detail.acceptedFiles);
+        }}
+      />
+    </div>
+  </div>
+{/if}
 
 {#if showDialog}
   <ConfirmationDialog
@@ -120,7 +148,7 @@
 
 <div class="pswp-gallery masonry-gallery" id="test">
   {#each images as image (image.src)}
-    <div class="image-container">
+    <div class="image-container" animate:flip={{ duration: 500 }}>
       <a
         href={image.src}
         data-pswp-width={image.width}
@@ -131,7 +159,7 @@
         <img src={image.src} alt="" />
         <button
           class="btn btn-error delete-button"
-          on:click|preventDefault={() => openDialog(image.src)}
+          on:click|preventDefault={(event) => openDialog(event, image.src)}
         >
           <Icon src={ImBin} />
         </button>
@@ -139,26 +167,3 @@
     </div>
   {/each}
 </div>
-
-<style>
-  .masonry-gallery {
-    column-count: 5;
-    column-gap: 1rem;
-  }
-
-  .masonry-gallery img {
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-
-  .image-container {
-    position: relative;
-    display: inline-block;
-  }
-
-  .delete-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
-</style>
