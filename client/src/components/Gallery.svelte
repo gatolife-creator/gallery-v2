@@ -133,7 +133,9 @@
           console.log(e);
           handleDrop(e.detail, e.detail.acceptedFiles);
         }}
-      />
+      >
+        <slot />
+      </Dropzone>
     </div>
   </div>
 {/if}
@@ -161,7 +163,7 @@
           class="btn btn-error delete-button"
           on:click|preventDefault={(event) => openDialog(event, image.src)}
         >
-          <Icon src={ImBin} />
+          <Icon src={ImBin} size="18px" />
         </button>
       </a>
     </div>
