@@ -6,13 +6,17 @@
   import ConfirmationDialog from "./ConfirmationDialog.svelte";
   import ImBin from "svelte-icons-pack/im/ImBin";
   import Icon from "svelte-icons-pack/Icon.svelte";
+  import {getNotificationsContext} from "svelte-notifications";
   import "photoswipe/style.css";
   import "./Gallery.css";
-
+  
   import type { Image } from "../types";
-
+  
+  const { addNotification } = getNotificationsContext();
   let images: Image[] = [];
   let uploaded = false;
+
+  const FLIP_ANIMATION_DURATION = 500;
 
   async function handleFileUpload(files: File[]) {
     const formData = new FormData();
@@ -34,9 +38,19 @@
         console.log(result.message); // 成功メッセージを表示
       } else {
         console.error(result.message); // エラーメッセージを表示
+        addNotification({
+        text: result.message,
+        position: "top-right",
+        type: "error",
+      })
       }
     } catch (error) {
       console.error("アップロード中にエラーが発生しました。", error);
+      addNotification({
+        text: "Failed to upload image",
+        position: "top-right",
+        type: "error",
+      })
     }
 
     uploaded = true;
@@ -70,9 +84,19 @@
         images = images.filter((image) => image.src !== imageSrc); // 画像をギャラリーから削除
       } else {
         console.error(result.message); // エラーメッセージを表示
+        addNotification({
+        text: result.message,
+        position: "top-right",
+        type: "error",
+      })
       }
     } catch (error) {
       console.error("画像の削除中にエラーが発生しました。", error);
+      addNotification({
+        text: "Failed to delete image",
+        position: "top-right",
+        type: "error",
+      })
     }
   }
 
@@ -170,7 +194,7 @@
 
 <div class="pswp-gallery masonry-gallery" id="test">
   {#each images as image (image.src)}
-    <div class="image-container" animate:flip={{ duration: 500 }}>
+    <div class="image-container" animate:flip={{ duration: FLIP_ANIMATION_DURATION }}>
       <a
         href={image.src}
         data-pswp-width={image.width}

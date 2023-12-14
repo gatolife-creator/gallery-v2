@@ -82,12 +82,23 @@ router.get("/api/images", (_, res) => {
 });
 
 router.post("/api/upload", upload.array("image"), (req, res) => {
-  console.log(req.files);
+  const imagesDir = path.join(__dirname, "images");
+  if (req.files && Array.isArray(req.files)) {
+    req.files.forEach((file: any) => {
+      if (fs.existsSync(path.join(imagesDir, file.originalname))) {
+        res.status(400).send({
+          message: "There are already files with the same name.",
+          error: "File already exists",
+        });
+        return;
+      }
+    });
+  }
   try {
-    res.send({ message: "画像がアップロードされました。" });
+    res.send({ message: "The image has been uploaded." });
   } catch (error) {
     res.status(400).send({
-      message: "画像のアップロード中にエラーが発生しました。",
+      message: "An error occurred while uploading the image.",
       error: error,
     });
   }
@@ -100,9 +111,14 @@ router.delete("/api/images/:filename", (req, res) => {
   fs.unlink(targetFile, (err) => {
     if (err) {
       console.error(err);
-      res.status(500).send({ message: "画像の削除中にエラーが発生しました。", error: err });
+      res
+        .status(500)
+        .send({
+          message: "An error occurred while deleting the image.",
+          error: err,
+        });
     } else {
-      res.send({ message: "画像が正常に削除されました。" });
+      res.send({ message: "The image has been deleted normally." });
     }
   });
 });
