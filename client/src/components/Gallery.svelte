@@ -96,6 +96,10 @@
 
   let dragging = false;
 
+  function handleDragStart(event: DragEvent) {
+    event.preventDefault();
+  }
+
   function handleDragOver(event: DragEvent) {
     event.preventDefault();
     dragging = true;
@@ -115,16 +119,32 @@
     handleFileUpload(files);
   }
 
+  function handleDropOutside(event: DragEvent) {
+    event.preventDefault();
+    dragging = false;
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === "Escape") {
+      dragging = false;
+    }
+  }
+
   onMount(async () => {
     await getImages();
   });
 </script>
 
-<svelte:window on:dragover={handleDragOver} on:dragleave={handleDragLeave} />
+<svelte:window
+  on:dragover={handleDragOver}
+  on:dragleave={handleDragLeave}
+  on:keydown={handleKeyDown}
+  on:drop={handleDropOutside}
+/>
 
 {#if dragging}
   <div class="overlay">
-    <div class="confirmation-dialog">
+    <div class="dropzone-dialog">
       <Dropzone
         containerClasses="w-full h-full"
         accept="image/*"
@@ -158,9 +178,9 @@
         target="_blank"
         rel="noreferrer"
       >
-        <img src={image.src} alt="" />
+        <img src={image.src} alt="" on:dragstart={handleDragStart} />
         <button
-          class="btn btn-error delete-button"
+          class="btn btn-error opacity-80 delete-button"
           on:click|preventDefault={(event) => openDialog(event, image.src)}
         >
           <Icon src={ImBin} size="18px" />
