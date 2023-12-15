@@ -6,12 +6,12 @@
   import ConfirmationDialog from "./ConfirmationDialog.svelte";
   import ImBin from "svelte-icons-pack/im/ImBin";
   import Icon from "svelte-icons-pack/Icon.svelte";
-  import {getNotificationsContext} from "svelte-notifications";
+  import { getNotificationsContext } from "svelte-notifications";
   import "photoswipe/style.css";
   import "./Gallery.css";
-  
+
   import type { Image } from "../types";
-  
+
   const { addNotification } = getNotificationsContext();
   let images: Image[] = [];
   let uploaded = false;
@@ -39,10 +39,10 @@
       } else {
         console.error(result.message); // エラーメッセージを表示
         addNotification({
-        text: result.message,
-        position: "top-right",
-        type: "error",
-      })
+          text: result.message,
+          position: "top-right",
+          type: "error",
+        });
       }
     } catch (error) {
       console.error("アップロード中にエラーが発生しました。", error);
@@ -50,7 +50,7 @@
         text: "Failed to upload image",
         position: "top-right",
         type: "error",
-      })
+      });
     }
 
     uploaded = true;
@@ -85,10 +85,10 @@
       } else {
         console.error(result.message); // エラーメッセージを表示
         addNotification({
-        text: result.message,
-        position: "top-right",
-        type: "error",
-      })
+          text: result.message,
+          position: "top-right",
+          type: "error",
+        });
       }
     } catch (error) {
       console.error("画像の削除中にエラーが発生しました。", error);
@@ -96,7 +96,7 @@
         text: "Failed to delete image",
         position: "top-right",
         type: "error",
-      })
+      });
     }
   }
 
@@ -194,7 +194,10 @@
 
 <div class="pswp-gallery masonry-gallery" id="test">
   {#each images as image (image.src)}
-    <div class="image-container" animate:flip={{ duration: FLIP_ANIMATION_DURATION }}>
+    <div
+      class="image-container"
+      animate:flip={{ duration: FLIP_ANIMATION_DURATION }}
+    >
       <a
         href={image.src}
         data-pswp-width={image.width}
