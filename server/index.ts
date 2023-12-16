@@ -13,6 +13,7 @@ app.use(express.static("public"));
 app.use(router);
 
 app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/thumbnails", express.static(path.join(__dirname, "thumbnails")));
 
 app.get("*", (_, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));

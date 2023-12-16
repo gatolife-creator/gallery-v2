@@ -147,7 +147,7 @@
         target="_blank"
         rel="noreferrer"
       >
-        <img src={image.src} alt="" on:dragstart={handleDragStart} />
+        <img src={image.thumbnail} alt="" on:dragstart={handleDragStart} />
         <button
           class="btn btn-error opacity-80 delete-button"
           on:click|preventDefault={(event) => openDialog(event, image.src)}
