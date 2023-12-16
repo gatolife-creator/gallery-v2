@@ -1,6 +1,8 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import { fade, blur } from "svelte/transition";
+  import "./ConfirmationDialog.css";
+
   const dispatch = createEventDispatcher();
 
   export let message = "";
