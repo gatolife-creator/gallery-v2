@@ -9,7 +9,8 @@ const storage = multer.diskStorage({
     cb(null, "images/"); // 画像の保存先ディレクトリ
   },
   filename: (_, file, cb) => {
-    cb(null, file.originalname);
+    const originalname = Buffer.from(file.originalname, "binary").toString();
+    cb(null, originalname);
   },
 });
 
@@ -82,18 +83,6 @@ router.get("/api/images", (_, res) => {
 });
 
 router.post("/api/upload", upload.array("image"), (req, res) => {
-  const imagesDir = path.join(__dirname, "images");
-  if (req.files && Array.isArray(req.files)) {
-    req.files.forEach((file: any) => {
-      if (fs.existsSync(path.join(imagesDir, file.originalname))) {
-        res.status(400).send({
-          message: "There are already files with the same name.",
-          error: "File already exists",
-        });
-        return;
-      }
-    });
-  }
   try {
     res.send({ message: "The image has been uploaded." });
   } catch (error) {
@@ -111,12 +100,10 @@ router.delete("/api/images/:filename", (req, res) => {
   fs.unlink(targetFile, (err) => {
     if (err) {
       console.error(err);
-      res
-        .status(500)
-        .send({
-          message: "An error occurred while deleting the image.",
-          error: err,
-        });
+      res.status(500).send({
+        message: "An error occurred while deleting the image.",
+        error: err,
+      });
     } else {
       res.send({ message: "The image has been deleted normally." });
     }
