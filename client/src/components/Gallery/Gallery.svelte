@@ -2,15 +2,15 @@
   import { onMount } from "svelte";
   import { flip } from "svelte/animate";
   import Dropzone from "svelte-file-dropzone/Dropzone.svelte";
-  import ConfirmationDialog from "./ConfirmationDialog.svelte";
+  import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog.svelte";
   import ImBin from "svelte-icons-pack/im/ImBin";
   import Icon from "svelte-icons-pack/Icon.svelte";
   import { getNotificationsContext } from "svelte-notifications";
   import "photoswipe/style.css";
   import "./Gallery.css";
 
-  import type { Image } from "../types";
-  import { handleFileUpload, getImages, deleteImage } from "../utils/image";
+  import type { Image } from "../../types";
+  import { handleFileUpload, getImages, deleteImage } from "../../utils/image";
 
   const { addNotification } = getNotificationsContext();
   let images: Image[] = [];

@@ -1,6 +1,6 @@
 <script>
   import { fade } from "svelte/transition";
-  import Gallery from "./components/Gallery.svelte";
+  import Gallery from "./components/Gallery/Gallery.svelte";
   import Notifications from "svelte-notifications";
 </script>
 
