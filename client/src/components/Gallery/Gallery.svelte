@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, createEventDispatcher } from "svelte";
   import { flip } from "svelte/animate";
   import Dropzone from "svelte-file-dropzone/Dropzone.svelte";
   import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog.svelte";
@@ -99,6 +99,33 @@
       dragging = false;
     }
   }
+
+  const dispatch = createEventDispatcher();
+
+  function openFileSelector() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = (event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files) {
+        handleFileUpload(
+          Array.from(files),
+          async (_) => {
+            images = await getImages();
+          },
+          (message) => {
+            addNotification({
+              text: message,
+              position: "top-right",
+              type: "error",
+            });
+          },
+        );
+      }
+    };
+    input.click();
+  }
 </script>
 
 <svelte:window
@@ -133,6 +160,11 @@
     on:cancel={closeDialog}
   />
 {/if}
+
+<button
+  class="block btn btn-lg btn-primary mx-auto my-5"
+  on:click={openFileSelector}>Upload Image</button
+>
 
 <div class="pswp-gallery masonry-gallery" id="test">
   {#each images as image (image.src)}
