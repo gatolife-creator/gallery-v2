@@ -3,6 +3,7 @@
   import { flip } from "svelte/animate";
   import Dropzone from "svelte-file-dropzone/Dropzone.svelte";
   import ConfirmationDialog from "../ConfirmationDialog/ConfirmationDialog.svelte";
+  import LoginDialog from "../LoginDialog/LoginDialog.svelte";
   import ImBin from "svelte-icons-pack/im/ImBin";
   import Icon from "svelte-icons-pack/Icon.svelte";
   import { getNotificationsContext } from "svelte-notifications";
@@ -11,6 +12,7 @@
 
   import type { Image } from "../../types";
   import { handleFileUpload, getImages, deleteImage } from "../../utils/image";
+  import { authenticate, isAuthorized } from "../../utils/auth";
 
   const { addNotification } = getNotificationsContext();
   let images: Image[] = [];
@@ -18,12 +20,19 @@
 
   const FLIP_ANIMATION_DURATION = 500;
 
-  onMount(async () => {
-    images = await getImages();
-  });
-
   let showDialog = false;
   let imageToDelete = "";
+
+  let isAuth = false;
+  let showLoginDialog = false;
+
+  onMount(async () => {
+    isAuth = await isAuthorized();
+    console.log(isAuth);
+    if (isAuth) {
+      images = await getImages();
+    }
+  });
 
   function openDialog(event: MouseEvent, imageSrc: string) {
     event.stopPropagation();
@@ -100,8 +109,6 @@
     }
   }
 
-  const dispatch = createEventDispatcher();
-
   function openFileSelector() {
     const input = document.createElement("input");
     input.type = "file";
@@ -126,6 +133,30 @@
     };
     input.click();
   }
+
+  function openLoginDialog() {
+    showLoginDialog = true;
+  }
+
+  function closeLoginDialog() {
+    showLoginDialog = false;
+  }
+
+  async function handleLogin(event: CustomEvent) {
+    const credentials = event.detail;
+    const result = await authenticate(credentials);
+    if (result) {
+      isAuth = true;
+      images = await getImages();
+      closeLoginDialog();
+    } else {
+      addNotification({
+        text: "Failed to authenticate",
+        position: "top-right",
+        type: "error",
+      });
+    }
+  }
 </script>
 
 <svelte:window
@@ -134,6 +165,14 @@
   on:keydown={handleKeyDown}
   on:drop={handleDropOutside}
 />
+
+{#if showLoginDialog}
+  <LoginDialog on:login={handleLogin} on:cancel={closeLoginDialog} />
+{/if}
+
+{#if !isAuth}
+  <button class="btn btn-primary" on:click={openLoginDialog}>ログイン</button>
+{/if}
 
 {#if dragging}
   <div class="overlay">

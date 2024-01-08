@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import path from "path";
 import fs from "fs";
 import sizeOf from "image-size";
@@ -21,6 +21,19 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 export const router = Router();
+router.use(checkAuthorization);
+
+function checkAuthorization(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) {
+  if (!(req.session as any).user) {
+    res.status(401).json({ message: "Unauthorized" });
+  } else {
+    next();
+  }
+}
 
 async function createThumbnail(imagePath: string, thumbnailPath: string) {
   await sharp(imagePath)
@@ -28,7 +41,7 @@ async function createThumbnail(imagePath: string, thumbnailPath: string) {
     .toFile(thumbnailPath);
 }
 
-router.get("/api/images", (_, res) => {
+router.get("/images", (_, res) => {
   const imageExtensions = [
     ".jpg",
     ".jpeg",
@@ -67,7 +80,7 @@ router.get("/api/images", (_, res) => {
   });
 });
 
-router.post("/api/upload", upload.array("image"), async (req, res) => {
+router.post("/upload", upload.array("image"), async (req, res) => {
   try {
     const imagesDir = path.join(__dirname, "images");
     const thumbnailsDir = path.join(__dirname, "thumbnails");
@@ -88,7 +101,7 @@ router.post("/api/upload", upload.array("image"), async (req, res) => {
   }
 });
 
-router.delete("/api/images/:filename", (req, res) => {
+router.delete("/images/:filename", (req, res) => {
   const targetFile = path.join(imagesDir, req.params.filename);
   const targetThumbnail = path.join(thumbnailsDir, req.params.filename);
 
