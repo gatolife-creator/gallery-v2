@@ -171,7 +171,10 @@
 {/if}
 
 {#if !isAuth}
-  <button class="btn btn-primary" on:click={openLoginDialog}>ログイン</button>
+  <button
+    class="block btn btn-primary btn-lg mx-auto my-5"
+    on:click={openLoginDialog}>Login</button
+  >
 {/if}
 
 {#if dragging}
@@ -200,32 +203,34 @@
   />
 {/if}
 
-<button
-  class="block btn btn-lg btn-primary mx-auto my-5"
-  on:click={openFileSelector}>Upload Image</button
->
+{#if isAuth}
+  <button
+    class="block btn btn-lg btn-primary mx-auto my-5"
+    on:click={openFileSelector}>Upload Image</button
+  >
 
-<div class="pswp-gallery masonry-gallery" id="test">
-  {#each images as image (image.src)}
-    <div
-      class="image-container"
-      animate:flip={{ duration: FLIP_ANIMATION_DURATION }}
-    >
-      <a
-        href={image.src}
-        data-pswp-width={image.width}
-        data-pswp-height={image.height}
-        target="_blank"
-        rel="noreferrer"
+  <div class="pswp-gallery masonry-gallery" id="test">
+    {#each images as image (image.src)}
+      <div
+        class="image-container"
+        animate:flip={{ duration: FLIP_ANIMATION_DURATION }}
       >
-        <img src={image.thumbnail} alt="" on:dragstart={handleDragStart} />
-        <button
-          class="btn btn-error opacity-80 delete-button"
-          on:click|preventDefault={(event) => openDialog(event, image.src)}
+        <a
+          href={image.src}
+          data-pswp-width={image.width}
+          data-pswp-height={image.height}
+          target="_blank"
+          rel="noreferrer"
         >
-          <Icon src={ImBin} size="18px" />
-        </button>
-      </a>
-    </div>
-  {/each}
-</div>
+          <img src={image.thumbnail} alt="" on:dragstart={handleDragStart} />
+          <button
+            class="btn btn-error opacity-80 delete-button"
+            on:click|preventDefault={(event) => openDialog(event, image.src)}
+          >
+            <Icon src={ImBin} size="18px" />
+          </button>
+        </a>
+      </div>
+    {/each}
+  </div>
+{/if}

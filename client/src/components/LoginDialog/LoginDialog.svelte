@@ -23,25 +23,20 @@
     in:blur={{ duration: 200 }}
     out:blur={{ duration: 200 }}
   >
-    <h2 class="text-lg font-bold text-black">ログイン</h2>
+    <h2 class="text-lg font-bold text-black">Login</h2>
     <div class="input-container">
-      <input
-        class="input"
-        type="text"
-        bind:value={id}
-        placeholder="id"
-      />
+      <input class="input" type="text" bind:value={id} placeholder="id" />
       <input
         class="input"
         type="password"
         bind:value={password}
-        placeholder="パスワード"
+        placeholder="password"
       />
     </div>
     <div class="button-container">
-      <button class="btn btn-primary" on:click={login}>ログイン</button>
+      <button class="btn btn-primary" on:click={login}>Login</button>
       <button class="btn btn-outline btn-secondary" on:click={cancel}
-        >キャンセル</button
+        >Cancel</button
       >
     </div>
   </div>

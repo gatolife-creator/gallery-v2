@@ -33,5 +33,5 @@ app.get("*", (_, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

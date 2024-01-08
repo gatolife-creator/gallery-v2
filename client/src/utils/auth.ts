@@ -30,7 +30,7 @@ export async function authenticate(credentials: { id: string, password: string }
 
         if (response.ok) {
             console.log(result.message);
-            return result.token;
+            return result.isAuthorized;
         } else {
             console.error(result.message);
             return null;

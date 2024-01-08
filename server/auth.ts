@@ -25,8 +25,8 @@ router.post("/auth", (req, res) => {
 
   if (id === ID && password === PASSWORD) {
     (req.session as any).user = id;
-    res.status(200).json({ message: "API access granted" });
+    res.status(200).json({ message: "API access granted", isAuthorized: true });
   } else {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized", isAuthorized: false });
   }
 });
